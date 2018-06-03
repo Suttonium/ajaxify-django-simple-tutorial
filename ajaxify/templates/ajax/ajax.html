@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <div class='col-6 offset-md-3'>
+        <h1>Your Form</h1>
+        <form method="post" class="my-ajax-form" data-url="/join/">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input class='btn btn-success' type='submit' value='Submit'/>
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        $(document).ready(function () {
+            let myForm = $(".my-ajax-form");
+            myForm.submit(function (event) {
+                event.preventDefault(); // stop form from submitting
+                let formData = $(this).serialize();
+                let URL = myForm.attr("data-url") || window.location.href;
+                $.ajax({
+                    method: "POST",
+                    url: URL,
+                    data: formData,
+                    success: handleFormSuccess,
+                    error: handleFormError
+                });
+            });
+
+            function handleFormSuccess(data, textStatus, jqXHR) {
+                console.log(data);
+                console.log(textStatus);
+                console.log(jqXHR);
+                myForm[0].reset();
+            }
+
+            function handleFormError(data, textStatus, errorThrown) {
+                console.log(data);
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
+    </script>
+{% endblock javascript %}
